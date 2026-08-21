@@ -1,3 +1,5 @@
+        </main>
+
         <!-- Footer -->
         <footer class="app-footer">
             <p>

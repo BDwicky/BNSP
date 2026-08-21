@@ -1,10 +1,110 @@
 /**
  * SMART INVENTORY PRO - CLIENT JAVASCRIPT
- * Interaktivitas, Panduan Asesor, Konfirmasi Aksi, & Visualisasi Chart
+ * Interaktivitas, Toast Notifications, SweetAlert2 Confirmations, & Visualisasi Chart
  */
 
+// 1. Inisialisasi Toast Mixin menggunakan SweetAlert2
+const Toast = (typeof Swal !== 'undefined') ? Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+}) : null;
+
+/**
+ * Helper untuk memicu Toast Notification
+ */
+function showToast(type, message) {
+    if (Toast) {
+        let icon = type;
+        if (type === 'error' || type === 'danger') icon = 'error';
+        if (type === 'warning') icon = 'warning';
+        if (type === 'info') icon = 'info';
+        if (type === 'success') icon = 'success';
+
+        Toast.fire({
+            icon: icon,
+            title: message
+        });
+    } else {
+        alert(message);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inisialisasi Tab Panduan Asesor (9 Langkah Kerja)
+    // 1.1 Mobile Navigation Toggle
+    const navToggle = document.getElementById('mobileNavToggle');
+    const navMenu = document.getElementById('navbarMenu');
+
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show');
+            const icon = navToggle.querySelector('i');
+            if (icon) {
+                if (navMenu.classList.contains('show')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-xmark');
+                } else {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                }
+            }
+        });
+    }
+
+    // 2. Deteksi Flash Message dari Server dan Tampilkan sebagai Toast
+    const flashEl = document.getElementById('flash-data');
+    if (flashEl) {
+        const type = flashEl.getAttribute('data-type') || 'info';
+        const message = flashEl.getAttribute('data-message') || '';
+        if (message) {
+            showToast(type, message);
+        }
+    }
+
+    // 3. Konfirmasi Penghapusan Data (SweetAlert2 Model Toast/Modal)
+    const deleteForms = document.querySelectorAll('form[action*="product_delete"]');
+    deleteForms.forEach(form => {
+        const btn = form.querySelector('.btn-delete-confirm');
+        if (btn) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const itemName = btn.getAttribute('data-name') || 'produk ini';
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Konfirmasi Hapus Data',
+                        html: `Apakah Anda yakin ingin menghapus <strong>"${itemName}"</strong>?<br><span style="color: #94a3b8; font-size: 0.85rem;">Data yang dihapus tidak dapat dipulihkan.</span>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#334155',
+                        confirmButtonText: '<i class="fas fa-trash-alt"></i> Ya, Hapus',
+                        cancelButtonText: 'Batal',
+                        background: '#1e293b',
+                        color: '#f8fafc',
+                        reverseButtons: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                } else {
+                    if (confirm(`Apakah Anda yakin ingin menghapus "${itemName}"?`)) {
+                        form.submit();
+                    }
+                }
+            });
+        }
+    });
+
+    // 4. Inisialisasi Tab Panduan Asesor (9 Langkah Kerja)
     const stepBtns = document.querySelectorAll('.step-btn');
     const stepContents = document.querySelectorAll('.step-content');
 
@@ -27,30 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Konfirmasi Penghapusan Data (Security UX)
-    const deleteButtons = document.querySelectorAll('.btn-delete-confirm');
-    deleteButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const itemName = btn.getAttribute('data-name') || 'item ini';
-            const confirmMsg = `Apakah Anda yakin ingin menghapus data "${itemName}"?\nTindakan ini tidak dapat dibatalkan.`;
-            if (!confirm(confirmMsg)) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    // 3. Auto Dismiss Alert Notifikasi
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-10px)';
-            setTimeout(() => alert.remove(), 500);
-        }, 5000);
-    });
-
-    // 4. Inisialisasi Chart.js jika ada canvas di halaman dashboard
+    // 5. Inisialisasi Chart.js jika ada canvas di halaman dashboard
     const chartCanvas = document.getElementById('inventoryChart');
     if (chartCanvas && typeof Chart !== 'undefined') {
         const labels = JSON.parse(chartCanvas.getAttribute('data-labels') || '[]');
