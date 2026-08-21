@@ -1,20 +1,32 @@
 <?php
+/**
+ * ==============================================================================
+ * HALAMAN UTAMA: DATA PRODUK INVENTARIS (PHP NATIVE MURNI)
+ * Memenuhi Kriteria Uji BNSP Skenario 3:
+ * - Unit 1: TIK.PR08.007.01 (Basis Data MySQL)
+ * - Unit 2: TIK.PR08.009.01 (Aplikasi Web Berbasis PHP)
+ * - Langkah Kerja 3: Menggunakan Sintaks Khusus MySQL (INNER JOIN, Agregasi COUNT, SUM)
+ * - Langkah Kerja 6 & 7: Variabel Superglobal $_GET dan Array Asosiatif
+ * - Langkah Kerja 9: Menampilkan Data (READ)
+ * ==============================================================================
+ */
 require_once __DIR__ . '/koneksi.php';
 
-// Cek autentikasi
+// Cek Autentikasi Login (Langkah Kerja 2)
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
+// Langkah Kerja 6 & 7: Menangkap parameter pencarian dari $_GET
 $search = clean($_GET['search'] ?? '');
 $kategori_id = (int)($_GET['kategori_id'] ?? 0);
 
-// Ambil Kategori untuk dropdown filter
+// Ambil Kategori untuk filter dropdown
 $katStmt = $pdo->query("SELECT * FROM kategori ORDER BY nama_kategori ASC");
 $kategoriList = $katStmt->fetchAll();
 
-// Query SQL Produk dengan JOIN dan Filter
+// Langkah Kerja 3 & 9: Query SQL Relasional INNER JOIN dengan Filter
 $sql = "SELECT p.*, k.nama_kategori 
         FROM produk p 
         INNER JOIN kategori k ON p.kategori_id = k.id 
@@ -35,9 +47,10 @@ $sql .= " ORDER BY p.id DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
+// Langkah Kerja 6: Menampung data dalam Array Asosiatif
 $products = $stmt->fetchAll();
 
-// Hitung Statistik Dasar (Langkah Kerja 3: Fungsi Agregasi MySQL)
+// Langkah Kerja 3: Sintaks Khusus Agregasi MySQL (COUNT, SUM)
 $statStmt = $pdo->query("SELECT COUNT(*) as total_item, SUM(stok) as total_stok, SUM(harga_jual * stok) as total_aset FROM produk");
 $stat = $statStmt->fetch();
 ?>
@@ -45,140 +58,176 @@ $stat = $statStmt->fetch();
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Inventaris - Mode Sederhana</title>
-    <link rel="stylesheet" href="../assets/css/simple.css">
+    <title>Sistem Inventaris Barang</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; line-height: 1.5; }
+        .menu-bar { background: #eee; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; }
+        .menu-bar a { margin-right: 15px; text-decoration: none; font-weight: bold; color: #0066cc; }
+        .pesan-sukses { background: #e6ffe6; border: 1px solid #b3ffb3; padding: 8px; margin-bottom: 15px; color: #006600; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+        th { background: #f2f2f2; }
+        .easter-trigger { cursor: pointer; user-select: none; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Banner Mode -->
-        <div class="mode-banner">
-            <span>🔹 <strong>Mode Sederhana (Simple Native Style):</strong> Tampilan simpel khas ujian praktik BNSP.</span>
-            <a href="../index.php" style="color: #3b82f6; font-weight: bold; text-decoration: none;">Beralih ke Mode Modern &rarr;</a>
-        </div>
 
-        <header>
-            <div>
-                <h1>Aplikasi Inventaris Barang</h1>
-                <small style="color: #64748b;">User Login: <strong><?= clean($_SESSION['nama_lengkap']) ?></strong> (Role: <?= clean($_SESSION['role']) ?>)</small>
-            </div>
-            <nav>
-                <a href="index.php">Data Produk</a>
-                <a href="tambah.php">+ Tambah Produk</a>
-                <a href="panduan.php">Panduan Asesor</a>
-                <a href="logout.php" style="color: #ef4444;" onclick="return confirm('Yakin ingin keluar?');">Logout</a>
-            </nav>
-        </header>
+    <h2 id="mainTitle" class="easter-trigger">SISTEM INVENTARIS BARANG</h2>
+    <p>
+        Pengguna Aktif: <strong><?= clean($_SESSION['nama_lengkap']) ?></strong> | 
+        Peran: <strong><?= clean($_SESSION['role']) ?></strong>
+    </p>
 
-        <!-- Pesan Notifikasi Sederhana -->
-        <?php if (isset($_GET['pesan'])): ?>
-            <?php if ($_GET['pesan'] === 'tambah_sukses'): ?>
-                <div class="alert alert-success">Data produk baru berhasil ditambahkan!</div>
-            <?php elseif ($_GET['pesan'] === 'edit_sukses'): ?>
-                <div class="alert alert-success">Data produk berhasil diperbarui!</div>
-            <?php elseif ($_GET['pesan'] === 'hapus_sukses'): ?>
-                <div class="alert alert-success">Data produk berhasil dihapus dari database!</div>
-            <?php endif; ?>
+    <!-- Navigasi Menu Sederhana Standar -->
+    <div class="menu-bar">
+        <a href="index.php"><strong>[ Data Produk ]</strong></a>
+        <a href="tambah.php"><strong>[ + Tambah Produk Baru ]</strong></a>
+        <a href="logout.php" onclick="return confirm('Yakin ingin logout?');" style="color: red;"><strong>[ Logout ]</strong></a>
+    </div>
+
+    <!-- Notifikasi Pesan -->
+    <?php if (isset($_GET['pesan'])): ?>
+        <?php if ($_GET['pesan'] === 'tambah_sukses'): ?>
+            <div class="pesan-sukses">Sukses: Data produk baru berhasil ditambahkan ke basis data!</div>
+        <?php elseif ($_GET['pesan'] === 'edit_sukses'): ?>
+            <div class="pesan-sukses">Sukses: Perubahan data produk berhasil disimpan!</div>
+        <?php elseif ($_GET['pesan'] === 'hapus_sukses'): ?>
+            <div class="pesan-sukses">Sukses: Data produk berhasil dihapus dari basis data!</div>
         <?php endif; ?>
+    <?php endif; ?>
 
-        <!-- Ringkasan Statistik Dasar -->
-        <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 150px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px;">
-                <div style="font-size: 11px; color: #64748b; font-weight: bold;">TOTAL PRODUK</div>
-                <div style="font-size: 20px; font-weight: bold; color: #1e293b;"><?= number_format($stat['total_item']) ?> Item</div>
-            </div>
-            <div style="flex: 1; min-width: 150px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px;">
-                <div style="font-size: 11px; color: #64748b; font-weight: bold;">TOTAL STOK FISIK</div>
-                <div style="font-size: 20px; font-weight: bold; color: #1e293b;"><?= number_format($stat['total_stok']) ?> Unit</div>
-            </div>
-            <div style="flex: 1; min-width: 150px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px;">
-                <div style="font-size: 11px; color: #64748b; font-weight: bold;">ESTIMASI NILAI ASET</div>
-                <div style="font-size: 20px; font-weight: bold; color: #059669;"><?= rupiah($stat['total_aset']) ?></div>
-            </div>
-        </div>
+    <!-- Ringkasan Agregasi Data (Langkah Kerja 3) -->
+    <fieldset style="margin-bottom: 15px; padding: 10px;">
+        <legend><strong>Ringkasan Statistik Basis Data (MySQL Agregasi)</strong></legend>
+        <table style="width: auto; border: none;">
+            <tr>
+                <td style="border: none; padding-right: 20px;">Total Jenis Produk: <strong><?= number_format($stat['total_item']) ?> Item</strong></td>
+                <td style="border: none; padding-right: 20px;">Total Stok Keseluruhan: <strong><?= number_format($stat['total_stok']) ?> Unit</strong></td>
+                <td style="border: none;">Total Nilai Aset: <strong><?= rupiah($stat['total_aset']) ?></strong></td>
+            </tr>
+        </table>
+    </fieldset>
 
-        <!-- Filter dan Pencarian -->
-        <form method="GET" action="" class="filter-box">
-            <div style="flex: 2; min-width: 180px;">
-                <input type="text" name="search" placeholder="Cari nama atau kode produk..." value="<?= clean($search) ?>">
-            </div>
-            <div style="flex: 1.5; min-width: 160px;">
-                <select name="kategori_id">
-                    <option value="0">-- Semua Kategori --</option>
-                    <?php foreach ($kategoriList as $kat): ?>
-                        <option value="<?= $kat['id'] ?>" <?= ($kategori_id == $kat['id']) ? 'selected' : '' ?>>
-                            <?= clean($kat['nama_kategori']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <?php if (!empty($search) || $kategori_id > 0): ?>
-                    <a href="index.php" class="btn btn-secondary">Reset</a>
-                <?php endif; ?>
-            </div>
-        </form>
+    <!-- Form Filter & Pencarian (Langkah Kerja 6: $_GET) -->
+    <form method="GET" action="index.php" style="margin-bottom: 15px; background: #fafafa; padding: 10px; border: 1px solid #ddd;">
+        <label for="search">Cari Nama/Kode Produk:</label>
+        <input type="text" id="search" name="search" value="<?= clean($search) ?>" placeholder="Kata kunci...">
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-            <h3>Daftar Tabel Produk (Total: <?= count($products) ?>)</h3>
-            <a href="tambah.php" class="btn btn-primary">+ Tambah Produk</a>
-        </div>
+        <label for="kategori_id" style="margin-left: 10px;">Kategori:</label>
+        <select id="kategori_id" name="kategori_id">
+            <option value="0">-- Semua Kategori --</option>
+            <?php foreach ($kategoriList as $k): ?>
+                <option value="<?= $k['id'] ?>" <?= ($kategori_id == $k['id']) ? 'selected' : '' ?>>
+                    <?= clean($k['nama_kategori']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
 
-        <!-- Tabel Data Produk -->
-        <table>
-            <thead>
+        <button type="submit" style="margin-left: 10px; padding: 3px 10px;">Cari Data</button>
+        <?php if (!empty($search) || $kategori_id > 0): ?>
+            <a href="index.php" style="margin-left: 5px; font-size: 12px;">[Reset Filter]</a>
+        <?php endif; ?>
+    </form>
+
+    <div style="margin-bottom: 5px;">
+        <strong>Tabel Data Master Produk:</strong>
+    </div>
+
+    <!-- Tabel Data (Langkah Kerja 9: READ) -->
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="width: 30px; text-align: center;">No</th>
+                <th>Kode Produk</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga Beli</th>
+                <th>Harga Jual</th>
+                <th style="text-align: center;">Stok</th>
+                <th style="text-align: center;">Status</th>
+                <th style="text-align: center; width: 120px;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($products)): ?>
                 <tr>
-                    <th style="width: 40px; text-align: center;">No</th>
-                    <th>Kode</th>
-                    <th>Nama Produk</th>
-                    <th>Kategori</th>
-                    <th>Harga Beli</th>
-                    <th>Harga Jual</th>
-                    <th style="text-align: center;">Stok</th>
-                    <th style="text-align: center;">Status</th>
-                    <th style="text-align: center; width: 130px;">Aksi</th>
+                    <td colspan="9" style="text-align: center; color: #888; padding: 15px;">
+                        Data produk tidak ditemukan pada basis data.
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($products)): ?>
+            <?php else: ?>
+                <?php $no = 1; foreach ($products as $p): ?>
                     <tr>
-                        <td colspan="9" style="text-align: center; color: #64748b; padding: 20px;">
-                            Tidak ada data produk yang ditemukan.
+                        <td style="text-align: center;"><?= $no++ ?></td>
+                        <td><?= clean($p['kode_produk']) ?></td>
+                        <td><?= clean($p['nama_produk']) ?></td>
+                        <td><?= clean($p['nama_kategori']) ?></td>
+                        <td><?= rupiah($p['harga_beli']) ?></td>
+                        <td><?= rupiah($p['harga_jual']) ?></td>
+                        <td style="text-align: center;"><?= (int)$p['stok'] ?> <?= clean($p['satuan']) ?></td>
+                        <td style="text-align: center;">
+                            <?php if ($p['stok'] > 10): ?>
+                                <span>Tersedia</span>
+                            <?php elseif ($p['stok'] > 0): ?>
+                                <span>Menipis</span>
+                            <?php else: ?>
+                                <span style="color: red;">Habis</span>
+                            <?php endif; ?>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="edit.php?id=<?= $p['id'] ?>">[Edit]</a> | 
+                            <a href="hapus.php?id=<?= $p['id'] ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data <?= addslashes($p['nama_produk']) ?>?');" style="color: red;">[Hapus]</a>
                         </td>
                     </tr>
-                <?php else: ?>
-                    <?php $no = 1; foreach ($products as $p): ?>
-                        <tr>
-                            <td style="text-align: center;"><?= $no++ ?></td>
-                            <td><strong><?= clean($p['kode_produk']) ?></strong></td>
-                            <td><?= clean($p['nama_produk']) ?></td>
-                            <td><?= clean($p['nama_kategori']) ?></td>
-                            <td><?= rupiah($p['harga_beli']) ?></td>
-                            <td><strong><?= rupiah($p['harga_jual']) ?></strong></td>
-                            <td style="text-align: center;"><?= (int)$p['stok'] ?> <?= clean($p['satuan']) ?></td>
-                            <td style="text-align: center;">
-                                <?php if ($p['stok'] > 10): ?>
-                                    <span style="color: #059669; font-weight: bold;">Tersedia</span>
-                                <?php elseif ($p['stok'] > 0): ?>
-                                    <span style="color: #d97706; font-weight: bold;">Menipis</span>
-                                <?php else: ?>
-                                    <span style="color: #dc2626; font-weight: bold;">Habis</span>
-                                <?php endif; ?>
-                            </td>
-                            <td style="text-align: center;">
-                                <a href="edit.php?id=<?= $p['id'] ?>" class="btn btn-secondary btn-sm">Edit</a>
-                                <a href="hapus.php?id=<?= $p['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus produk <?= addslashes($p['nama_produk']) ?>?');">Hapus</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
 
-        <footer>
-            <p>Smart Inventory Pro (Simple Native PHP) &mdash; Uji Kompetensi BNSP Pemrograman Web (Skenario 3)</p>
-        </footer>
+    <hr style="margin-top: 25px;">
+    <p style="margin-bottom: 5px;"><small>&copy; <?= date('Y') ?> &mdash; Sistem Inventaris Barang</small></p>
+    <div style="margin-top: 8px;">
+        <span id="rocketEasterEgg" title="🚀" style="cursor: pointer; font-size: 16px; opacity: 0.35; transition: opacity 0.2s, transform 0.2s; display: inline-block;">🚀</span>
     </div>
+
+    <!-- Script Easter Egg (Klik Roket, Shortcut Ctrl+Shift+M, atau Klik 3x Judul) -->
+    <script>
+        let clickCount = 0;
+        let timer = null;
+
+        function triggerModern() {
+            window.location.href = '../index.php?mode=pro';
+        }
+
+        // Trigger Roket
+        const rocket = document.getElementById('rocketEasterEgg');
+        if (rocket) {
+            rocket.addEventListener('mouseenter', () => { rocket.style.opacity = '1'; rocket.style.transform = 'scale(1.25)'; });
+            rocket.addEventListener('mouseleave', () => { rocket.style.opacity = '0.35'; rocket.style.transform = 'scale(1)'; });
+            rocket.addEventListener('click', triggerModern);
+        }
+
+        // Trigger Klik 3x Judul
+        const titleEl = document.getElementById('mainTitle');
+        if (titleEl) {
+            titleEl.addEventListener('click', () => {
+                clickCount++;
+                clearTimeout(timer);
+                if (clickCount >= 3) {
+                    triggerModern();
+                } else {
+                    timer = setTimeout(() => { clickCount = 0; }, 1000);
+                }
+            });
+        }
+
+        // Trigger Shortcut Keyboard
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
+                e.preventDefault();
+                triggerModern();
+            }
+        });
+    </script>
 </body>
 </html>

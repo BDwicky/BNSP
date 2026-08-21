@@ -68,6 +68,11 @@ $flash = getFlash();
                             <i class="fas fa-graduation-cap"></i> <span>Panduan Asesor</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="index.php?mode=simple" class="nav-link" style="border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399;" title="Kembali ke Mode Standar Sederhana">
+                            <i class="fas fa-arrow-left"></i> <span>Mode Standar</span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="user-profile">

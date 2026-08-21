@@ -1,42 +1,43 @@
 <?php
-require_once __DIR__ . '/config/config.php';
+/**
+ * ==============================================================================
+ * HALAMAN LOGIN UTAMA SISTEM INVENTARIS (DEFAULT: SIMPLE NATIVE)
+ * Memenuhi Kriteria Uji BNSP Skenario 3
+ * ==============================================================================
+ */
+require_once __DIR__ . '/koneksi.php';
 
-// Jika sudah login, langsung arahkan ke dashboard
+// Jika sudah login, redirect ke index.php
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php?action=dashboard');
+    header('Location: index.php');
     exit;
 }
 
-$error = '';
-$username = '';
-$flash = getFlash();
+$pesanError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $token = $_POST['csrf_token'] ?? '';
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $username = clean($_POST['username'] ?? '');
+    $password = clean($_POST['password'] ?? '');
 
-    // Validasi CSRF Token (Langkah Kerja 2: Security)
-    if (!verifyCsrfToken($token)) {
-        $error = 'Sesi tidak valid / CSRF token kadaluarsa. Silakan muat ulang halaman.';
-    } elseif (empty($username) || empty($password)) {
-        $error = 'Username dan Password wajib diisi.';
+    if (empty($username) || empty($password)) {
+        $pesanError = 'Username dan Password tidak boleh kosong!';
     } else {
-        $userModel = new User();
-        $user = $userModel->authenticate($username, $password);
+        // Anti-SQL Injection dengan Prepared Statement (Langkah Kerja 2)
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
+        $stmt->execute([':username' => $username]);
+        $user = $stmt->fetch();
 
-        if ($user) {
-            // Set session (Langkah Kerja 6 & 7: Variabel Internal $_SESSION)
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
+        // Verifikasi Enkripsi Hash BCRYPT (Langkah Kerja 2)
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id']      = $user['id'];
+            $_SESSION['username']     = $user['username'];
             $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['role']         = $user['role'];
 
-            setFlash('success', "Selamat datang kembali, {$user['nama_lengkap']}!");
-            header('Location: index.php?action=dashboard');
+            header('Location: index.php');
             exit;
         } else {
-            $error = 'Username atau Password salah. (Gunakan admin / admin123)';
+            $pesanError = 'Username atau Password salah! (Default: admin / admin123)';
         }
     }
 }
@@ -45,60 +46,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login - Smart Inventory BNSP</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
-    <!-- SweetAlert2 Pre-existing component for Toast -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Login - Sistem Inventaris Barang</title>
+    <style>
+        body { font-family: sans-serif; margin: 30px; line-height: 1.6; }
+        .box { width: 350px; padding: 20px; border: 1px solid #999; margin: 40px auto; }
+        .error { color: red; font-weight: bold; margin-bottom: 10px; }
+        .easter-title { cursor: pointer; user-select: none; }
+    </style>
 </head>
 <body>
-    <!-- Flash / Error Toast Data -->
-    <?php if (!empty($error)): ?>
-        <div id="flash-data" data-type="error" data-message="<?= htmlspecialchars($error) ?>"></div>
-    <?php elseif ($flash): ?>
-        <div id="flash-data" data-type="<?= htmlspecialchars($flash['type']) ?>" data-message="<?= htmlspecialchars($flash['message']) ?>"></div>
-    <?php endif; ?>
 
-    <div class="auth-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <div class="brand-icon">
-                    <i class="fas fa-boxes-stacked"></i>
-                </div>
-                <h1 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.25rem;">Smart Inventory Pro</h1>
-                <p style="color: var(--text-secondary); font-size: 0.85rem;">Sistem Demonstrasi Uji Kompetensi BNSP Skenario 3</p>
-            </div>
+    <div class="box">
+        <h2 id="loginTitle" class="easter-title" title="">LOGIN SISTEM INVENTARIS</h2>
+        <p><small>Aplikasi Manajemen Stok &amp; Barang</small></p>
+        <hr>
 
-            <form action="login.php" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+        <?php if (!empty($pesanError)): ?>
+            <div class="error"><?= $pesanError ?></div>
+        <?php endif; ?>
 
-                <div class="form-group">
-                    <label class="form-label" for="username"><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Contoh: admin" value="<?= htmlspecialchars($username) ?>" required autofocus>
-                </div>
+        <form method="POST" action="login.php">
+            <p>
+                <label for="username"><strong>Username:</strong></label><br>
+                <input type="text" id="username" name="username" style="width: 100%; padding: 6px;" placeholder="admin" required autofocus>
+            </p>
+            <p>
+                <label for="password"><strong>Password:</strong></label><br>
+                <input type="password" id="password" name="password" style="width: 100%; padding: 6px;" placeholder="admin123" required>
+            </p>
+            <p>
+                <button type="submit" style="padding: 6px 15px; cursor: pointer;">Masuk / Login</button>
+            </p>
+        </form>
 
-                <div class="form-group">
-                    <label class="form-label" for="password"><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan password" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
-                    <i class="fas fa-sign-in-alt"></i> Masuk ke Sistem
-                </button>
-            </form>
-
-            <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.82rem; color: var(--text-muted); text-align: center;">
-                <p style="margin-bottom: 0.65rem; font-weight: 600; color: var(--text-secondary);">Akun Default untuk Uji Asesor:</p>
-                <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';showToast('info', 'Kredensial Admin berhasil diisikan!');">
-                        <i class="fas fa-key"></i> Isi Akun Admin
-                    </button>
-                </div>
-            </div>
-        </div>
+        <hr>
+        <p><small>Akun Pengujian Asesor: <strong>admin</strong> / <strong>admin123</strong></small></p>
+        <button type="button" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';" style="padding: 4px 8px; font-size: 11px;">
+            Isi Otomatis Akun Admin
+        </button>
     </div>
 
-    <script src="assets/js/app.js"></script>
+    <!-- Script Easter Egg: Shortcut Ctrl+Shift+M atau Klik 3x Judul -->
+    <script>
+        let clicks = 0;
+        let timer = null;
+
+        function launchPro() {
+            window.location.href = 'index.php?mode=pro';
+        }
+
+        document.getElementById('loginTitle').addEventListener('click', () => {
+            clicks++;
+            clearTimeout(timer);
+            if (clicks >= 3) {
+                launchPro();
+            } else {
+                timer = setTimeout(() => { clicks = 0; }, 1000);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
+                e.preventDefault();
+                launchPro();
+            }
+        });
+    </script>
 </body>
 </html>
