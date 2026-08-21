@@ -18,3 +18,4 @@ config/config.local.php
 *.log
 tmp/
 temp/
+*.zip

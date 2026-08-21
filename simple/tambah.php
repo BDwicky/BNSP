@@ -71,8 +71,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Tambah Data Produk</title>
     <style>
         body { font-family: sans-serif; margin: 20px; line-height: 1.5; }
-        .menu-bar { background: #eee; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; }
-        .menu-bar a { margin-right: 15px; text-decoration: none; font-weight: bold; color: #0066cc; }
+        /* Navigasi Menu Header: Container Transparan, Tombol Abu-abu Klasik Win XP */
+        .menu-bar {
+            background: transparent;
+            padding: 2px 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: Tahoma, 'Segoe UI', sans-serif;
+        }
+        .xp-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            font-family: Tahoma, sans-serif;
+            font-size: 11px;
+            color: #000000;
+            text-decoration: none;
+            background: #d4d0c8;
+            border: 1px solid #808080;
+            border-radius: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .xp-btn:hover {
+            background: #c2beb6;
+            border-color: #555555;
+            color: #000000;
+        }
         .error { color: red; font-weight: bold; margin-bottom: 10px; }
         table.form-table td { padding: 6px; }
     </style>
@@ -81,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h2>TAMBAH DATA PRODUK BARU</h2>
     <div class="menu-bar">
-        <a href="index.php">&larr; Kembali ke Daftar Produk</a>
+        <a href="index.php" class="xp-btn"><strong>&larr; [ Kembali ke Data Produk ]</strong></a>
     </div>
 
     <?php if (!empty($error)): ?>

@@ -61,8 +61,47 @@ $stat = $statStmt->fetch();
     <title>Sistem Inventaris Barang</title>
     <style>
         body { font-family: sans-serif; margin: 20px; line-height: 1.5; }
-        .menu-bar { background: #eee; padding: 10px; border: 1px solid #ccc; margin-bottom: 15px; }
-        .menu-bar a { margin-right: 15px; text-decoration: none; font-weight: bold; color: #0066cc; }
+        /* Navigasi Menu Header: Container Transparan, Tombol Abu-abu Klasik Win XP */
+        .menu-bar {
+            background: transparent;
+            padding: 2px 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: Tahoma, 'Segoe UI', sans-serif;
+        }
+        .xp-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            font-family: Tahoma, sans-serif;
+            font-size: 11px;
+            color: #000000;
+            text-decoration: none;
+            background: #d4d0c8;
+            border: 1px solid #808080;
+            border-radius: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .xp-btn:hover {
+            background: #c2beb6;
+            border-color: #555555;
+            color: #000000;
+        }
+        .xp-btn:active {
+            background: #b0aca4;
+            border-color: #333333;
+            color: #000000;
+        }
+        .xp-sep {
+            display: inline-block;
+            width: 0;
+            height: 14px;
+            border-left: 1px solid #999999;
+            margin: 0 2px;
+        }
         .pesan-sukses { background: #e6ffe6; border: 1px solid #b3ffb3; padding: 8px; margin-bottom: 15px; color: #006600; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
@@ -78,11 +117,12 @@ $stat = $statStmt->fetch();
         Peran: <strong><?= clean($_SESSION['role']) ?></strong>
     </p>
 
-    <!-- Navigasi Menu Sederhana Standar -->
+    <!-- Navigasi Menu Bergaya Windows Classic Toolbar (Abu-abu) -->
     <div class="menu-bar">
-        <a href="index.php"><strong>[ Data Produk ]</strong></a>
-        <a href="tambah.php"><strong>[ + Tambah Produk Baru ]</strong></a>
-        <a href="logout.php" onclick="return confirm('Yakin ingin logout?');" style="color: red;"><strong>[ Logout ]</strong></a>
+        <a href="index.php" class="xp-btn"><strong>[ Data Produk ]</strong></a>
+        <a href="tambah.php" class="xp-btn"><strong>[ + Tambah Produk Baru ]</strong></a>
+        <div class="xp-sep"></div>
+        <a href="logout.php" onclick="return confirm('Yakin ingin logout?');" class="xp-btn"><strong>[ Logout ]</strong></a>
     </div>
 
     <!-- Notifikasi Pesan -->
@@ -185,12 +225,145 @@ $stat = $statStmt->fetch();
     </table>
 
     <hr style="margin-top: 25px;">
-    <p style="margin-bottom: 5px;"><small>&copy; <?= date('Y') ?> &mdash; Sistem Inventaris Barang</small></p>
-    <div style="margin-top: 8px;">
-        <span id="rocketEasterEgg" title="🚀" style="cursor: pointer; font-size: 16px; opacity: 0.35; transition: opacity 0.2s, transform 0.2s; display: inline-block;">🚀</span>
+
+    <!-- Running Text Copyright Seamless Infinite Loop (Nyambung Tanpa Kosong) -->
+    <style>
+        .ticker-wrap {
+            position: relative;
+            width: 260px;
+            height: 22px;
+            background: #fafafa;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            cursor: pointer;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .ticker-wrap:hover {
+            background: #1e293b;
+            border-color: #0f172a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        /* Efek Tabrakan / Impact Shake saat 1x Klik */
+        .ticker-wrap.crash-active {
+            animation: crashImpact 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes crashImpact {
+            0% { transform: scale(1) translate(0, 0); }
+            15% { transform: scale(0.92) translate(-8px, 1px) rotate(-1.5deg); }
+            30% { transform: scale(1.06) translate(7px, -2px) rotate(1.2deg); }
+            50% { transform: scale(0.97) translate(-4px, 1px) rotate(-0.6deg); }
+            70% { transform: scale(1.02) translate(2px, -1px); }
+            85% { transform: scale(0.99) translate(-1px, 0); }
+            100% { transform: scale(1) translate(0, 0) rotate(0deg); }
+        }
+        /* Gelombang Splash Shockwave */
+        .crash-shockwave {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 2px solid #ef4444;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.2);
+            animation: shockwaveExpand 0.5s ease-out forwards;
+            z-index: 10;
+        }
+        @keyframes shockwaveExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(0.2);
+                opacity: 1;
+                border-color: #ef4444;
+            }
+            50% {
+                border-color: #f59e0b;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(6);
+                opacity: 0;
+                border-color: #38bdf8;
+            }
+        }
+        /* Percikan Partikel Splash */
+        .crash-spark {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: sparkFly 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            z-index: 11;
+        }
+        @keyframes sparkFly {
+            0% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+                opacity: 0;
+            }
+        }
+        .ticker-move {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            width: max-content;
+            animation: tickerContinuous 14s linear infinite;
+        }
+        .ticker-block {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            padding-right: 0;
+            font-size: 11px;
+            color: #333;
+            font-family: monospace;
+            line-height: 1;
+            white-space: nowrap;
+            transition: color 0.25s ease;
+        }
+        .ticker-wrap:hover .ticker-block {
+            color: #f8fafc;
+        }
+        /* Pengecualian Khusus Ukuran Bar Miring (Full-Height Kolom) */
+        .ticker-bar {
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 22px;
+            height: 22px;
+            color: #000;
+            letter-spacing: -3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            transition: color 0.25s ease;
+        }
+        .ticker-wrap:hover .ticker-bar {
+            color: #38bdf8;
+        }
+        @keyframes tickerContinuous {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+    <div class="ticker-wrap">
+        <div class="ticker-move">
+            <div class="ticker-block">
+                <span>&copy; <?= date('Y') ?> &mdash; Uji Kompetensi BNSP &bull; Sistem Inventaris Barang &bull; Bagus Dwicky Primananda</span><span class="ticker-bar">///</span>
+            </div>
+            <div class="ticker-block">
+                <span>&copy; <?= date('Y') ?> &mdash; Uji Kompetensi BNSP &bull; Sistem Inventaris Barang &bull; Bagus Dwicky Primananda</span><span class="ticker-bar">///</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Script Easter Egg (Klik Roket, Shortcut Ctrl+Shift+M, atau Klik 3x Judul) -->
+    <!-- Script Easter Egg Rahasia (Klik 2x Running Text, Shortcut Ctrl+Shift+M, atau Klik 3x Judul) -->
     <script>
         let clickCount = 0;
         let timer = null;
@@ -199,12 +372,54 @@ $stat = $statStmt->fetch();
             window.location.href = '../index.php?mode=pro';
         }
 
-        // Trigger Roket
-        const rocket = document.getElementById('rocketEasterEgg');
-        if (rocket) {
-            rocket.addEventListener('mouseenter', () => { rocket.style.opacity = '1'; rocket.style.transform = 'scale(1.25)'; });
-            rocket.addEventListener('mouseleave', () => { rocket.style.opacity = '0.35'; rocket.style.transform = 'scale(1)'; });
-            rocket.addEventListener('click', triggerModern);
+        const tickerWrap = document.querySelector('.ticker-wrap');
+        if (tickerWrap) {
+            // Trigger 1x Click: Efek Splash / Tabrakan
+            tickerWrap.addEventListener('click', (e) => {
+                tickerWrap.classList.remove('crash-active');
+                void tickerWrap.offsetWidth; // trigger reflow
+                tickerWrap.classList.add('crash-active');
+
+                // Koordinat titik klik
+                const rect = tickerWrap.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+
+                // Gelombang kejut (shockwave)
+                const shockwave = document.createElement('div');
+                shockwave.className = 'crash-shockwave';
+                shockwave.style.left = clickX + 'px';
+                shockwave.style.top = clickY + 'px';
+                tickerWrap.appendChild(shockwave);
+                setTimeout(() => shockwave.remove(), 550);
+
+                // Percikan partikel warna-warni splash
+                const colors = ['#ef4444', '#f59e0b', '#38bdf8', '#10b981', '#a855f7', '#ffffff'];
+                for (let i = 0; i < 14; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'crash-spark';
+                    spark.style.left = clickX + 'px';
+                    spark.style.top = clickY + 'px';
+                    spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 25 + Math.random() * 50;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity;
+                    const size = 3 + Math.random() * 4;
+                    
+                    spark.style.width = size + 'px';
+                    spark.style.height = size + 'px';
+                    spark.style.setProperty('--tx', tx + 'px');
+                    spark.style.setProperty('--ty', ty + 'px');
+                    
+                    tickerWrap.appendChild(spark);
+                    setTimeout(() => spark.remove(), 500);
+                }
+            });
+
+            // Trigger Double Click (2x Klik): Direct ke Mode Modern
+            tickerWrap.addEventListener('dblclick', triggerModern);
         }
 
         // Trigger Klik 3x Judul
