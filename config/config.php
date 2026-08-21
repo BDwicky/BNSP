@@ -1,34 +1,40 @@
 <?php
 /**
- * Konfigurasi Utama Aplikasi Sistem Inventaris BNSP
- * Memenuhi Standar Unit: TIK.PR08.007.01 & TIK.PR08.009.01
+ * Konfigurasi Utama Aplikasi
+ * Memenuhi Kriteria: Unit TIK.PR08.007.01 & TIK.PR08.009.01
  */
 
-// Memulai session PHP jika belum aktif (Langkah Kerja 6 & 7: Variabel Internal $_SESSION)
+// Mulai session secara aman jika belum aktif
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Konfigurasi Database (MySQL)
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'db_bnsp_inventaris');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_CHARSET', 'utf8mb4');
+// 1. Muat Konfigurasi Khusus Server (config.local.php) jika ada
+// File ini diabaikan oleh Git agar kredensial server tidak hilang saat git pull/update.
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
 
-// Konfigurasi Aplikasi
-define('APP_NAME', 'Smart Inventory Pro');
-define('APP_VERSION', '1.0.0 (BNSP Skenario 3)');
-define('BASE_URL', 'http://localhost:8000');
+// 2. Konfigurasi Database Default (Gunakan nilai dari config.local.php jika sudah didefinisikan)
+defined('DB_HOST')    || define('DB_HOST', 'localhost');
+defined('DB_PORT')    || define('DB_PORT', '3306');
+defined('DB_NAME')    || define('DB_NAME', 'db_bnsp_inventaris');
+defined('DB_USER')    || define('DB_USER', 'root');
+defined('DB_PASS')    || define('DB_PASS', '');
+defined('DB_CHARSET') || define('DB_CHARSET', 'utf8mb4');
 
-// Autoload Classes sederhana
-spl_autoload_register(function ($class) {
-    $file = __DIR__ . '/../classes/' . $class . '.php';
+// 3. Konfigurasi Aplikasi & Environment
+defined('APP_NAME')    || define('APP_NAME', 'Smart Inventory Pro');
+defined('APP_VERSION') || define('APP_VERSION', '1.0.0 (BNSP Skenario 3)');
+defined('BASE_URL')    || define('BASE_URL', 'http://localhost:8000');
+
+// 4. Autoloading Classes (Langkah Kerja 8: OOP & Class Structure)
+spl_autoload_register(function ($className) {
+    $file = __DIR__ . '/../classes/' . $className . '.php';
     if (file_exists($file)) {
         require_once $file;
     }
 });
 
-// Load Helpers
+// 5. Muat Helper Functions (Sanitasi, CSRF, Formatter Rupiah, dll)
 require_once __DIR__ . '/../helpers/utils.php';

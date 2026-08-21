@@ -9,6 +9,11 @@ Desktop.ini
 *.sublime-project
 *.sublime-workspace
 
+# Environment & Local Server Configs
+config/config.local.php
+.env
+.env.local
+
 # Logs & temp
 *.log
 tmp/
