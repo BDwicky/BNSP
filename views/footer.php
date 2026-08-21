@@ -12,7 +12,7 @@
         </footer>
     </div>
 
-    <!-- Script App -->
-    <script src="assets/js/app.js"></script>
+    <!-- Script App with Cache Busting -->
+    <script src="assets/js/app.js?v=<?= time() ?>"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ $flash = getFlash();
     <title><?= htmlspecialchars($pageTitle ?? APP_NAME) ?> - BNSP Skenario 3</title>
     <!-- Pre-existing Components: Google Fonts & Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?= time() ?>">
     <!-- Pre-existing Component: Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Pre-existing Component: SweetAlert2 (Toast & Confirmation) -->
