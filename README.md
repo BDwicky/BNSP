@@ -43,36 +43,43 @@ Buka browser dan akses: **`http://localhost:8000`**
 
 ---
 
-## 📁 Struktur Direktori
+## 📁 Struktur Direktori Proyek
 
 ```
 BNSP/
 ├── assets/
 │   ├── css/
-│   │   └── style.css            # Sistem desain modern, glassmorphism, responsive
+│   │   ├── style.css            # Sistem desain modern, glassmorphism, responsive (Mode Pro)
+│   │   └── native.css           # Styling dasar panduan
 │   └── js/
-│       └── app.js              # Interaktivitas, konfirmasi aksi, integrasi Chart.js
+│       └── app.js               # Interaktivitas, konfirmasi aksi, integrasi Chart.js
 ├── classes/
-│   ├── Database.php            # Singleton PDO Connection
-│   ├── Product.php             # OOP Model Produk (CRUD & Agregasi)
-│   ├── Category.php            # OOP Model Kategori
-│   ├── User.php                # OOP Model Autentikasi Pengguna
-│   └── Validator.php           # OOP Input Validation
+│   ├── Database.php             # Singleton PDO Connection dengan Auto-Fallback
+│   ├── Product.php              # OOP Model Produk (CRUD & Agregasi)
+│   ├── Category.php             # OOP Model Kategori
+│   ├── User.php                 # OOP Model Autentikasi Pengguna
+│   └── Validator.php            # OOP Input Validation
 ├── config/
-│   ├── config.php              # Konfigurasi konstanta & koneksi
-│   └── environment.php         # Inspeksi spesifikasi server/software
+│   ├── config.php               # Konfigurasi konstanta, database & autoloader
+│   ├── config.local.example.php # Contoh konfigurasi override server
+│   └── environment.php          # Inspeksi spesifikasi software/server runtime
 ├── helpers/
-│   └── utils.php               # Helper format rupiah, sanitasi, CSRF, flash message
+│   └── utils.php                # Helper format rupiah, sanitasi, CSRF, flash message
 ├── views/
-│   ├── header.php              # Template Header & Navbar
-│   ├── footer.php              # Template Footer
-│   ├── dashboard.php           # Statistik, grafik visualisasi, ringkasan
-│   ├── product_list.php        # Tabel CRUD produk, search, filter, pagination
-│   ├── product_form.php        # Form input/edit produk
-│   └── asesor_guide.php        # Tab interaktif panduan demonstrasi 9 langkah
-├── database.sql                # Skrip DDL/DML, relasi FK, dan seed data
-├── index.php                   # Entry point & router aplikasi
-├── login.php                   # Halaman login
-├── logout.php                  # Halaman logout
-└── README.md                   # Dokumentasi teknis & panduan asesmen
+│   ├── header.php               # Template Header & Navbar Modern
+│   ├── footer.php               # Template Footer Modern
+│   ├── dashboard.php            # Statistik agregasi, grafik Chart.js, ringkasan
+│   ├── product_list.php         # Tabel CRUD produk pro, search, filter, pagination
+│   ├── product_form.php         # Form input/edit produk modern
+│   └── asesor_guide.php         # Tab interaktif panduan demonstrasi 9 langkah
+├── database.sql                 # Skrip DDL/DML, relasi FK, dan seed data awal
+├── index.php                    # Entry point aplikasi (Default: Simple Native, Pro via router)
+├── login.php                    # Form login sistem (Anti-SQLi & Password BCRYPT)
+├── logout.php                   # Pembersihan sesi user & redirect
+├── tambah.php                   # Form tambah data produk (PHP Native INSERT)
+├── edit.php                     # Form edit data produk (PHP Native UPDATE)
+├── hapus.php                    # Skrip hapus data produk (PHP Native DELETE)
+├── panduan.php                  # Lembar jawaban 9 langkah kerja asesor (Native)
+├── koneksi.php                  # Koneksi PDO Native dengan Multi-Candidate Auto-Fallback
+└── README.md                    # Dokumentasi teknis & petunjuk pengujian asesor
 ```
